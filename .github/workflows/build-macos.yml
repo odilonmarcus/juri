@@ -1,0 +1,37 @@
+name: Build macOS DMG
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Baixar projeto
+        uses: actions/checkout@v5
+
+      - name: Mostrar estrutura
+        run: |
+          pwd
+          find . -maxdepth 3 -type f | sort
+
+      - name: Preparar script
+        run: |
+          chmod +x build_app.command
+
+      - name: Compilar e gerar DMG
+        run: |
+          ./build_app.command
+
+      - name: Verificar resultado
+        run: |
+          echo "Conteudo da pasta dist:"
+          find dist -maxdepth 2 -type f -print || true
+
+      - name: Publicar instalador
+        uses: actions/upload-artifact@v4
+        with:
+          name: Conselho-Juridico-IA-macOS
+          path: dist/*.dmg
+          if-no-files-found: error
